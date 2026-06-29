@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Ma Révision Médicale</title>
+
+  <!-- Firebase SDK (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    /* === Tout le style === */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f6fa;
+      color: #1e2a3a;
+      padding: 16px;
+      max-width: 800px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+    .content {
+      background: white;
+      border-radius: 32px;
+      padding: 24px 20px 32px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+    }
+    .header { margin-bottom: 24px; }
+    .header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #1e2a3a 0%, #2c3e50 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-sub { font-size: 0.9rem; color: #6b7a8f; margin-top: 4px; font-weight: 500; }
+
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      flex: 1;
+      background: #f8faff;
+      border-radius: 20px;
+      padding: 14px 10px;
+      text-align: center;
+      border: 1px solid #eef2f9;
+    }
+    .stat-num { font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+    .stat-card.total .stat-num { color: #2c3e50; }
+    .stat-card.done .stat-num { color: #2a9d8f; }
+    .stat-card.left .stat-num { color: #e76f51; }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; color: #6b7a8f; margin-top: 4px; }
+
+    .progress-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: #f8faff;
+      border-radius: 28px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      border: 1px solid #eef2f9;
+    }
+    .ring-wrap { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
+    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: #e6edf6; stroke-width: 7; }
+    .ring-fill { fill: none; stroke: url(#ringGrad); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+    .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 600; }
+    .ring-pct { font-size: 1.2rem; line-height: 1.2; }
+    .ring-sub { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7a8f; }
+    .progress-msg { flex: 1; }
+    .msg-title { font-weight: 700; font-size: 1.1rem; }
+    .msg-sub { font-size: 0.85rem; color: #6b7a8f; }
+
+    .rewards-section {
+      background: #fcf9f0;
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      border: 1px solid #f0ead8;
+    }
+    .rewards-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .rewards-title span:last-child {
+      background: #2a9d8f;
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 12px;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+    .reward-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px solid #eee6d4;
+      font-size: 0.9rem;
+    }
+    .reward-item:last-child { border-bottom: none; }
+    .reward-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    .reward-badge.locked { background: #eef2f9; color: #9aa9b9; }
+    .reward-badge.unlocked { background: #f4a261; color: white; }
+    .reward-info { flex: 1; }
+    .reward-amount { font-weight: 700; }
+    .reward-desc { font-size: 0.7rem; color: #6b7a8f; }
+    .reward-status { font-size: 0.7rem; font-weight: 600; }
+    .reward-status.locked { color: #9aa9b9; }
+    .reward-status.unlocked { color: #2a9d8f; }
+
+    .congrats-banner {
+      display: none;
+      background: #2a9d8f;
+      color: white;
+      font-weight: 600;
+      padding: 14px 18px;
+      border-radius: 40px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .congrats-banner.show { display: block; }
+
+    .add-card {
+      background: #f8faff;
+      border-radius: 24px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      border: 1px solid #eef2f9;
+    }
+    .add-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .add-toggle .icon-wrap {
+      width: 32px;
+      height: 32px;
+      background: #eef2f9;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.3rem;
+      color: #2c3e50;
+    }
+    .add-toggle .label { flex: 1; font-weight: 500; }
+    .add-toggle .chevron { color: #9aa9b9; transition: transform 0.2s; }
+    .add-toggle.open .chevron { transform: rotate(180deg); }
+    .add-form { display: none; padding-top: 16px; flex-direction: column; gap: 12px; }
+    .add-form.open { display: flex; }
+    .field-group { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: 0.8rem; font-weight: 500; color: #4a5a6e; }
+    .field-group input {
+      padding: 10px 14px;
+      border-radius: 16px;
+      border: 1px solid #dce3ef;
+      background: white;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .field-group input:focus { border-color: #7b8ba0; }
+    .btn-add {
+      background: #2c3e50;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 4px;
+    }
+    .btn-add:hover { background: #1e2a3a; }
+
+    .search-wrap { position: relative; margin-bottom: 16px; }
+    .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9aa9b9; }
+    .search-wrap input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border-radius: 40px;
+      border: 1px solid #dce3ef;
+      background: white;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .search-wrap input:focus { border-color: #7b8ba0; }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 6px 16px;
+      border-radius: 30px;
+      border: 1px solid #dce3ef;
+      background: transparent;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-tab.active { background: #2c3e50; color: white; border-color: #2c3e50; }
+    .filter-tab:hover { background: #eef2f9; }
+    .filter-tab.active:hover { background: #1e2a3a; }
+
+    .theme-section { margin-bottom: 24px; }
+    .theme-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .theme-dot { width: 12px; height: 12px; border-radius: 20px; flex-shrink: 0; }
+    .theme-title { font-weight: 600; font-size: 1rem; }
+    .theme-badge { margin-left: auto; font-size: 0.75rem; background: #eef2f9; padding: 2px 12px; border-radius: 30px; font-weight: 500; }
+    .theme-card { background: #fafcff; border-radius: 20px; padding: 4px 0; border: 1px solid #eef2f9; }
+
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f4fc;
+      transition: background 0.15s;
+    }
+    .chapter-item:last-child { border-bottom: none; }
+    .chapter-item:hover { background: #f5f9ff; }
+    .custom-cb {
+      width: 24px;
+      height: 24px;
+      border-radius: 30px;
+      border: 2px solid #d0d9e8;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: white;
+      background: white;
+    }
+    .custom-cb.checked { background: #2a9d8f; border-color: #2a9d8f; }
+    .custom-cb.checked::after { content: "✓"; color: white; }
+    .chapter-name { flex: 1; font-weight: 500; font-size: 0.95rem; }
+    .chapter-name.done { text-decoration: line-through; color: #9aa9b9; }
+    .btn-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .btn-icon {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      padding: 4px 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      color: #7b8ba0;
+      transition: background 0.2s, color 0.2s;
+      line-height: 1;
+    }
+    .btn-icon:hover { background: #eef2f9; color: #1e2a3a; }
+    .btn-icon.del:hover { color: #e76f51; }
+
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      max-width: 90%;
+      pointer-events: none;
+    }
+    .toast {
+      background: #1e2a3a;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      pointer-events: auto;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast .highlight { color: #f4a261; }
+
+    @media (max-width: 500px) {
+      .content { padding: 16px; }
+      .stats-row { gap: 6px; }
+      .stat-card { padding: 10px 6px; }
+      .stat-num { font-size: 1.4rem; }
+      .progress-section { flex-wrap: wrap; justify-content: center; }
+      .ring-wrap { width: 72px; height: 72px; }
+      .ring-pct { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="content">
+  <header class="header">
+    <h1>Ma Révision Médicale</h1>
+    <div class="header-sub">Tableau de bord · 4ème année 2025/2026</div>
+  </header>
+
+  <div class="stats-row">
+    <div class="stat-card total">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card done">
+      <div class="stat-num" id="statDone">0</div>
+      <div class="stat-label">Révisés</div>
+    </div>
+    <div class="stat-card left">
+      <div class="stat-num" id="statLeft">0</div>
+      <div class="stat-label">Restants</div>
+    </div>
+  </div>
+
+  <div class="progress-section">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 90 90" width="90" height="90">
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#E05A5A" />
+            <stop offset="100%" stop-color="#C4607A" />
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="45" cy="45" r="37" />
+        <circle class="ring-fill" id="ringFill" cx="45" cy="45" r="37" stroke-dasharray="232.5" stroke-dashoffset="232.5" />
+      </svg>
+      <div class="ring-label">
+        <span class="ring-pct" id="ringPct">0%</span>
+        <span class="ring-sub">Avancement</span>
+      </div>
+    </div>
+    <div class="progress-msg">
+      <div class="msg-title" id="motivMsg">Bienvenue !</div>
+      <div class="msg-sub" id="motivSub">Commence tes révisions 💪</div>
+    </div>
+  </div>
+
+  <div class="rewards-section" id="rewardsSection">
+    <div class="rewards-title">
+      <span>🏆 Récompenses (100 €)</span>
+      <span id="pointsDisplay">0 pts</span>
+    </div>
+    <div id="rewardsList"></div>
+  </div>
+
+  <div class="congrats-banner" id="congratsBanner">
+    Bravo ! Tu as révisé tous les chapitres !
+  </div>
+
+  <div class="add-card">
+    <div class="add-toggle" id="addToggle">
+      <div class="icon-wrap">+</div>
+      <span class="label">Ajouter un chapitre</span>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="add-form" id="addForm">
+      <div class="field-group">
+        <div class="field-label">Nom du chapitre</div>
+        <input type="text" id="chapterName" placeholder="ex : Insuffisance cardiaque" />
+      </div>
+      <div class="field-group">
+        <div class="field-label">Thème / Spécialité</div>
+        <input type="text" id="chapterTheme" list="themeList" placeholder="ex : Cardiologie" />
+        <datalist id="themeList">
+          <option value="Cardiologie" />
+          <option value="Dermatologie" />
+          <option value="MALADIE INFECTIEUSE" />
+          <option value="Neurologie" />
+          <option value="Pneumologie" />
+          <option value="Psychiatrie" />
+          <option value="Rhumatologie" />
+          <option value="Traumatologie" />
+        </datalist>
+      </div>
+      <button class="btn-add" id="addChapterBtn">Ajouter le chapitre</button>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Rechercher un chapitre ou un thème…" />
+  </div>
+
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-filter="all">Tous</button>
+    <button class="filter-tab" data-filter="todo">À réviser</button>
+    <button class="filter-tab" data-filter="done">Révisés</button>
+  </div>
+
+  <div id="chapterList"></div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ===== VOTRE CONFIGURATION FIREBASE (RECOPIÉE ICI) =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwVb1EtW4M65TcQlCUpS8b7VeaEgCLya0",
+    authDomain: "revision-medicale-4a.firebaseapp.com",
+    databaseURL: "https://revision-medicale-4a-default-rtdb.firebaseio.com",
+    projectId: "revision-medicale-4a",
+    storageBucket: "revision-medicale-4a.firebasestorage.app",
+    messagingSenderId: "276489545059",
+    appId: "1:276489545059:web:c48a381fc2818e36c15f56"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const dataRef = db.ref('/data');
+
+  // ===== DONNÉES INITIALES (complétez avec votre liste exhaustive) =====
+  const DEFAULT_CHAPTERS = [
+    // Cardiologie
+    { name: "HTA essentielle", theme: "Cardiologie", done: false },
+    { name: "Crise aiguë hypertensive", theme: "Cardiologie", done: false },
+    { name: "Insuffisance mitrale (IM)", theme: "Cardiologie", done: false },
+    { name: "Rétrécissement mitral (RM)", theme: "Cardiologie", done: false },
+    { name: "Athérome", theme: "Cardiologie", done: false },
+    { name: "SCC (Syndrome coronarien chronique)", theme: "Cardiologie", done: false },
+    { name: "SCA ST–", theme: "Cardiologie", done: false },
+    { name: "SCA ST•", theme: "Cardiologie", done: false },
+    { name: "ICCons (Insuffisance cardiaque congestive)", theme: "Cardiologie", done: false },
+    { name: "OAP cardiogenique", theme: "Cardiologie", done: false },
+    { name: "Choc cardiogénique", theme: "Cardiologie", done: false },
+    { name: "HTAP", theme: "Cardiologie", done: false },
+    { name: "Insuffisance tricuspidienne", theme: "Cardiologie", done: false },
+    // Dermatologie (4 révisés)
+    { name: "Psoriasis", theme: "Dermatologie", done: true },
+    { name: "Syphilis", theme: "Dermatologie", done: true },
+    { name: "Dermatite atopique", theme: "Dermatologie", done: true },
+    { name: "Eczéma de contact", theme: "Dermatologie", done: true },
+    { name: "Allergies cutanées", theme: "Dermatologie", done: false },
+    { name: "Infections cutanées", theme: "Dermatologie", done: false },
+    { name: "Toxidermie", theme: "Dermatologie", done: false },
+    // Autres thèmes (exemples)
+    { name: "Pneumonie", theme: "Pneumologie", done: false },
+    { name: "Asthme", theme: "Pneumologie", done: false },
+    { name: "BPCO", theme: "Pneumologie", done: false },
+    { name: "Tuberculose", theme: "MALADIE INFECTIEUSE", done: false },
+    { name: "VIH", theme: "MALADIE INFECTIEUSE", done: false },
+    { name: "Paludisme", theme: "MALADIE INFECTIEUSE", done: false },
+    { name: "AVC", theme: "Neurologie", done: false },
+    { name: "Épilepsie", theme: "Neurologie", done: false },
+    { name: "Parkinson", theme: "Neurologie", done: false },
+    { name: "Fracture du fémur", theme: "Traumatologie", done: false },
+    { name: "Entorse", theme: "Traumatologie", done: false },
+    { name: "Luxation", theme: "Traumatologie", done: false },
+    { name: "Dépression", theme: "Psychiatrie", done: false },
+    { name: "Anxiété", theme: "Psychiatrie", done: false },
+    { name: "Polyarthrite rhumatoïde", theme: "Rhumatologie", done: false },
+    { name: "Goutte", theme: "Rhumatologie", done: false },
+  ];
+
+  // ===== POIDS PAR THÈME =====
+  const THEME_WEIGHT = {
+    "Dermatologie": 1,
+    "MALADIE INFECTIEUSE": 1,
+    "Pneumologie": 1,
+    "Cardiologie": 2,
+    "Neurologie": 2,
+    "Traumatologie": 3,
+  };
+  function getWeight(theme) { return THEME_WEIGHT[theme] || 1; }
+
+  // ===== PALIERS =====
+  const REWARDS = [
+    { level: 1, percent: 0.20, amount: 3.125, label: "1er palier" },
+    { level: 2, percent: 0.40, amount: 6.25,  label: "2ème palier" },
+    { level: 3, percent: 0.60, amount: 12.50, label: "3ème palier" },
+    { level: 4, percent: 0.80, amount: 25.00, label: "4ème palier" },
+    { level: 5, percent: 1.00, amount: 50.00, label: "5ème palier" },
+  ];
+
+  // ===== ÉTAT LOCAL =====
+  let chapters = [];
+  let unlockedLevels = [];
+  let totalPoints = 0;
+  let earnedPoints = 0;
+
+  // ===== RÉFÉRENCES DOM =====
+  const $ = id => document.getElementById(id);
+  const statTotal = $('statTotal');
+  const statDone = $('statDone');
+  const statLeft = $('statLeft');
+  const ringFill = $('ringFill');
+  const ringPct = $('ringPct');
+  const motivMsg = $('motivMsg');
+  const motivSub = $('motivSub');
+  const congratsBanner = $('congratsBanner');
+  const chapterList = $('chapterList');
+  const searchInput = $('searchInput');
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const addToggle = $('addToggle');
+  const addForm = $('addForm');
+  const addChapterBtn = $('addChapterBtn');
+  const chapterNameInput = $('chapterName');
+  const chapterThemeInput = $('chapterTheme');
+  const rewardsList = $('rewardsList');
+  const pointsDisplay = $('pointsDisplay');
+  const toastContainer = $('toastContainer');
+
+  // ===== FONCTIONS =====
+  function getWeightForChapter(ch) { return getWeight(ch.theme); }
+  function computeTotalPoints(arr) { return arr.reduce((s, ch) => s + getWeightForChapter(ch), 0); }
+  function computeEarnedPoints(arr) { return arr.reduce((s, ch) => s + (ch.done ? getWeightForChapter(ch) : 0), 0); }
+  function getDoneCount(arr) { return arr.filter(ch => ch.done).length; }
+
+  function renderStats() {
+    const total = chapters.length;
+    const done = getDoneCount(chapters);
+    const left = total - done;
+    statTotal.textContent = total;
+    statDone.textContent = done;
+    statLeft.textContent = left;
+  }
+
+  function renderProgress() {
+    const total = computeTotalPoints(chapters);
+    const earned = computeEarnedPoints(chapters);
+    totalPoints = total;
+    earnedPoints = earned;
+    const pct = total === 0 ? 0 : Math.min(100, Math.round((earned / total) * 100));
+    const circumference = 2 * Math.PI * 37;
+    const offset = circumference - (pct / 100) * circumference;
+    ringFill.style.strokeDashoffset = offset;
+    ringPct.textContent = pct + '%';
+
+    let msg, sub;
+    if (pct === 0) { msg = "Bienvenue !"; sub = "Commence tes révisions 💪"; }
+    else if (pct < 20) { msg = "Belle entrée en matière"; sub = "Continue, ça va venir !"; }
+    else if (pct < 40) { msg = "Bon rythme !"; sub = "Tu es sur la bonne voie 🚀"; }
+    else if (pct < 60) { msg = "Motivé(e) !"; sub = "La moitié est faite, tiens bon 💪"; }
+    else if (pct < 80) { msg = "Excellent !"; sub = "Plus que quelques chapitres !"; }
+    else if (pct < 100) { msg = "Presque fini !"; sub = "Dernière ligne droite 🏁"; }
+    else { msg = "🎉 Mission accomplie !"; sub = "Tu as révisé tous les chapitres !"; }
+    motivMsg.textContent = msg;
+    motivSub.textContent = sub;
+
+    if (pct === 100 && chapters.length > 0) congratsBanner.classList.add('show');
+    else congratsBanner.classList.remove('show');
+
+    pointsDisplay.textContent = `${earned} / ${total} pts`;
+  }
+
+  function renderRewards() {
+    const pct = totalPoints === 0 ? 0 : earnedPoints / totalPoints;
+    const newly = [];
+    REWARDS.forEach(r => {
+      if (pct >= r.percent && !unlockedLevels.includes(r.level)) {
+        unlockedLevels.push(r.level);
+        newly.push(r);
+      }
+    });
+    unlockedLevels.sort((a,b) => a-b);
+
+    let html = '';
+    REWARDS.forEach(r => {
+      const unlocked = unlockedLevels.includes(r.level);
+      const badgeClass = unlocked ? 'unlocked' : 'locked';
+      const statusText = unlocked ? '✅ Débloqué' : '🔒 Verrouillé';
+      const statusClass = unlocked ? 'unlocked' : 'locked';
+      html += `
+        <div class="reward-item">
+          <div class="reward-badge ${badgeClass}">${r.level}</div>
+          <div class="reward-info">
+            <div class="reward-amount">${r.amount.toFixed(2)} €</div>
+            <div class="reward-desc">${r.label} (${Math.round(r.percent*100)}%)</div>
+          </div>
+          <div class="reward-status ${statusClass}">${statusText}</div>
+        </div>
+      `;
+    });
+    rewardsList.innerHTML = html;
+
+    newly.forEach(r => {
+      showToast(`🎉 Félicitations ! Tu as débloqué ${r.amount.toFixed(2)} € (${r.label}) !`);
+    });
+  }
+
+  function renderList() {
+    const filter = document.querySelector('.filter-tab.active')?.dataset.filter || 'all';
+    const search = searchInput.value.toLowerCase().trim();
+
+    let filtered = chapters;
+    if (filter === 'todo') filtered = filtered.filter(ch => !ch.done);
+    else if (filter === 'done') filtered = filtered.filter(ch => ch.done);
+    if (search) {
+      filtered = filtered.filter(ch =>
+        ch.name.toLowerCase().includes(search) ||
+        ch.theme.toLowerCase().includes(search)
+      );
+    }
+
+    const groups = {};
+    filtered.forEach(ch => {
+      if (!groups[ch.theme]) groups[ch.theme] = [];
+      groups[ch.theme].push(ch);
+    });
+
+    let html = '';
+    for (const [theme, items] of Object.entries(groups)) {
+      const doneCount = items.filter(i => i.done).length;
+      const totalCount = items.length;
+      let dotColor = '#7b8ba0';
+      if (theme === 'Cardiologie') dotColor = '#E05A5A';
+      else if (theme === 'Dermatologie') dotColor = '#C4607A';
+      else if (theme === 'MALADIE INFECTIEUSE') dotColor = '#2a9d8f';
+      else if (theme === 'Neurologie') dotColor = '#e9c46a';
+      else if (theme === 'Pneumologie') dotColor = '#4a9fb5';
+      else if (theme === 'Traumatologie') dotColor = '#e76f51';
+      else if (theme === 'Psychiatrie') dotColor = '#9b5de5';
+      else if (theme === 'Rhumatologie') dotColor = '#f4a261';
+
+      html += `
+        <div class="theme-section">
+          <div class="theme-header">
+            <div class="theme-dot" style="background:${dotColor}"></div>
+            <span class="theme-title">${theme}</span>
+            <span class="theme-badge">${doneCount}/${totalCount}</span>
+          </div>
+          <div class="theme-card">
+      `;
+      items.forEach(ch => {
+        const doneClass = ch.done ? 'is-done' : '';
+        const nameClass = ch.done ? 'done' : '';
+        const cbClass = ch.done ? 'checked' : '';
+        html += `
+          <div class="chapter-item ${doneClass}" data-key="${ch.key}">
+            <div class="custom-cb ${cbClass}" data-key="${ch.key}"></div>
+            <span class="chapter-name ${nameClass}">${ch.name}</span>
+            <div class="btn-actions">
+              <button class="btn-icon edit" data-key="${ch.key}" title="Modifier">✏️</button>
+              <button class="btn-icon del" data-key="${ch.key}" title="Supprimer">🗑️</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div></div>`;
+    }
+    chapterList.innerHTML = html || '<p style="text-align:center;color:#6b7a8f;padding:20px;">Aucun chapitre trouvé</p>';
+    attachEvents();
+  }
+
+  function attachEvents() {
+    document.querySelectorAll('.custom-cb').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const key = this.dataset.key;
+        toggleChapter(key);
+      });
+    });
+    document.querySelectorAll('.btn-icon.del').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const key = this.dataset.key;
+        if (confirm('Supprimer ce chapitre ?')) deleteChapter(key);
+      });
+    });
+    document.querySelectorAll('.btn-icon.edit').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const key = this.dataset.key;
+        editChapter(key);
+      });
+    });
+  }
+
+  function toggleChapter(key) {
+    const chapter = chapters.find(ch => ch.key === key);
+    if (!chapter) return;
+    chapter.done = !chapter.done;
+    const updates = {};
+    updates[`${key}/done`] = chapter.done;
+    dataRef.update(updates);
+  }
+
+  function deleteChapter(key) {
+    dataRef.child(key).remove();
+  }
+
+  function editChapter(key) {
+    const chapter = chapters.find(ch => ch.key === key);
+    if (!chapter) return;
+    const newName = prompt('Nouveau nom :', chapter.name);
+    if (newName === null) return;
+    const trimmed = newName.trim();
+    if (!trimmed) return alert('Le nom ne peut pas être vide.');
+    const newTheme = prompt('Nouveau thème :', chapter.theme);
+    if (newTheme === null) return;
+    const trimmedTheme = newTheme.trim();
+    if (!trimmedTheme) return alert('Le thème ne peut pas être vide.');
+    const updates = {};
+    updates[`${key}/name`] = trimmed;
+    updates[`${key}/theme`] = trimmedTheme;
+    dataRef.update(updates);
+  }
+
+  function addChapter(name, theme) {
+    if (!name.trim() || !theme.trim()) return alert('Veuillez remplir tous les champs.');
+    const newKey = dataRef.push().key;
+    const newChapter = { name: name.trim(), theme: theme.trim(), done: false };
+    const update = {};
+    update[newKey] = newChapter;
+    dataRef.update(update);
+    chapterNameInput.value = '';
+    chapterThemeInput.value = '';
+    addForm.classList.remove('open');
+    addToggle.classList.remove('open');
+  }
+
+  // ===== SYNC AVEC FIREBASE =====
+  dataRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const arr = Object.keys(data).map(key => ({ key, ...data[key] }));
+      chapters = arr;
+    } else {
+      const initialData = {};
+      DEFAULT_CHAPTERS.forEach(ch => {
+        const key = dataRef.push().key;
+        initialData[key] = { ...ch };
+      });
+      dataRef.set(initialData);
+      return;
+    }
+    renderStats();
+    renderProgress();
+    renderRewards();
+    renderList();
+  });
+
+  // ===== TOAST =====
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast show';
+    toast.innerHTML = message;
+    toastContainer.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+
+  // ===== ÉVÉNEMENTS UI =====
+  addToggle.addEventListener('click', () => {
+    addForm.classList.toggle('open');
+    addToggle.classList.toggle('open');
+  });
+  addChapterBtn.addEventListener('click', () => {
+    addChapter(chapterNameInput.value, chapterThemeInput.value);
+  });
+  chapterNameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addChapterBtn.click(); });
+  chapterThemeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addChapterBtn.click(); });
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      filterTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderList();
+    });
+  });
+
+  searchInput.addEventListener('input', renderList);
+</script>
+</body>
+</html>

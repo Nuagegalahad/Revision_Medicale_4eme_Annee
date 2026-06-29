@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <title>Ma Révision Médicale</title>
 
   <!-- Police Baloo 2 -->
@@ -16,7 +16,7 @@
 
   <style>
     /* ============================================================
-       STYLE EXACT DE VOTRE ANCIEN SITE (inchangé)
+       STYLE DE BASE (conservé)
        ============================================================ */
     :root {
       --cream: #FFF8F0;
@@ -31,104 +31,130 @@
       --text: #2E1A1A;
       --muted: #8A7A6A;
       --white: #FFFFFF;
-      --r-lg: 20px;
-      --r-md: 14px;
-      --r-sm: 10px;
       --shadow: 0 4px 20px rgba(196, 96, 122, 0.10);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     body {
       background-color: var(--cream);
       min-height: 100vh;
       font-family: "Baloo 2", cursive;
       color: var(--text);
-      padding-bottom: 60px;
+      padding-bottom: 80px;
       overflow-x: hidden;
     }
 
+    /* Fond à motifs */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(200, 180, 160, 0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(200, 180, 160, 0.12) 1px, transparent 1px);
+        linear-gradient(rgba(200, 180, 160, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200, 180, 160, 0.08) 1px, transparent 1px);
       background-size: 32px 32px;
       pointer-events: none;
       z-index: 0;
     }
 
-    .content { position: relative; z-index: 1; }
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 14px;
+    }
 
+    /* ===== HEADER amélioré ===== */
     .header {
-      background: var(--navy);
-      padding: 30px 20px 24px;
+      background: linear-gradient(145deg, var(--navy), var(--navy2));
+      padding: 28px 20px 22px;
       text-align: center;
+      border-radius: 0 0 32px 32px;
+      margin: 0 -14px 20px;
       position: relative;
       overflow: hidden;
-      border-bottom: 4px solid var(--coral);
+      box-shadow: 0 6px 30px rgba(212, 120, 138, 0.25);
     }
 
     .header::after {
       content: "";
       position: absolute;
-      bottom: -2px;
+      bottom: 0;
       left: 0;
       right: 0;
       height: 6px;
       background: repeating-linear-gradient(
         90deg,
-        var(--coral) 0px, var(--coral) 10px,
-        transparent 10px, transparent 20px
+        var(--coral) 0px, var(--coral) 12px,
+        transparent 12px, transparent 24px
       );
-      opacity: 0.4;
+      opacity: 0.5;
     }
 
     .header h1 {
-      font-family: "Baloo 2", cursive;
       font-weight: 800;
       color: white;
-      font-size: 2rem;
+      font-size: 2.1rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
-      margin-bottom: 2px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      margin-bottom: 4px;
+      transform: translateY(0);
+      transition: transform 0.3s;
+    }
+
+    .header h1:hover {
+      transform: translateY(-1px);
     }
 
     .header-sub {
-      color: rgba(255, 255, 255, 0.65);
-      font-size: 0.78rem;
-      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       font-weight: 600;
     }
 
+    /* ===== STATS améliorées ===== */
     .stats-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 10px;
-      padding: 16px 16px 0;
-      max-width: 600px;
-      margin: 0 auto;
+      margin-bottom: 18px;
     }
 
     .stat-card {
       background: var(--card-bg);
       border: 2px solid var(--border);
-      border-radius: var(--r-md);
-      padding: 14px 10px;
+      border-radius: var(--radius-sm);
+      padding: 14px 8px;
       text-align: center;
       box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(196, 96, 122, 0.12);
     }
 
     .stat-num {
-      font-family: "Baloo 2", cursive;
-      font-size: 2.2rem;
+      font-size: 2.4rem;
       font-weight: 800;
       line-height: 1;
       margin-bottom: 2px;
+      transition: color 0.3s;
     }
 
     .stat-card.total .stat-num { color: var(--navy); }
@@ -136,21 +162,29 @@
     .stat-card.left .stat-num { color: var(--coral); }
 
     .stat-label {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
     }
 
+    /* ===== PROGRESS SECTION améliorée ===== */
     .progress-section {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 16px;
-      max-width: 600px;
-      margin: 0 auto;
+      gap: 20px;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.3s;
+    }
+
+    .progress-section:hover {
+      box-shadow: 0 8px 28px rgba(196, 96, 122, 0.10);
     }
 
     .ring-wrap {
@@ -160,20 +194,22 @@
       flex-shrink: 0;
     }
 
-    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-wrap svg {
+      transform: rotate(-90deg);
+    }
 
     .ring-bg {
       fill: none;
       stroke: var(--border);
-      stroke-width: 8;
+      stroke-width: 7;
     }
 
     .ring-fill {
       fill: none;
       stroke: url(#ringGrad);
-      stroke-width: 8;
+      stroke-width: 7;
       stroke-linecap: round;
-      transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .ring-label {
@@ -184,11 +220,10 @@
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-family: "Baloo 2", cursive;
     }
 
     .ring-pct {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       color: var(--navy);
       line-height: 1;
     }
@@ -200,75 +235,96 @@
       letter-spacing: 0.08em;
     }
 
-    .progress-msg { flex: 1; }
+    .progress-msg {
+      flex: 1;
+    }
+
     .progress-msg .msg-title {
-      font-family: "Baloo 2", cursive;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--navy);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
+
     .progress-msg .msg-sub {
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       color: var(--muted);
-      line-height: 1.5;
+      line-height: 1.4;
       font-weight: 500;
     }
 
-    /* ===== SECTION RÉCOMPENSES ===== */
+    /* ===== RÉCOMPENSES améliorées ===== */
     .rewards-section {
       background: var(--card-bg);
       border: 2px solid var(--border);
-      border-radius: var(--r-lg);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 18px;
       box-shadow: var(--shadow);
-      padding: 14px 18px;
-      margin: 0 14px 14px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      transition: box-shadow 0.3s;
+    }
+
+    .rewards-section:hover {
+      box-shadow: 0 8px 28px rgba(196, 96, 122, 0.08);
     }
 
     .rewards-title {
-      font-family: "Baloo 2", cursive;
       font-weight: 700;
       font-size: 0.95rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       color: var(--navy);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .rewards-title span:last-child {
       background: var(--green);
       color: white;
-      font-size: 0.7rem;
-      padding: 3px 12px;
+      font-size: 0.8rem;
+      padding: 4px 14px;
       border-radius: 50px;
       font-weight: 700;
       letter-spacing: 0.04em;
+      box-shadow: 0 2px 8px rgba(76, 175, 130, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .rewards-title span:last-child:hover {
+      transform: scale(1.04);
     }
 
     .reward-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 6px 0;
-      border-bottom: 1.5px solid rgba(200, 180, 160, 0.3);
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1.5px solid rgba(200, 180, 160, 0.2);
       font-size: 0.9rem;
+      transition: background 0.2s;
+      border-radius: 8px;
+      padding-left: 4px;
     }
-    .reward-item:last-child { border-bottom: none; }
+
+    .reward-item:last-child {
+      border-bottom: none;
+    }
+
+    .reward-item:hover {
+      background: rgba(196, 96, 122, 0.04);
+    }
 
     .reward-badge {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       flex-shrink: 0;
+      transition: transform 0.3s, box-shadow 0.3s;
     }
 
     .reward-badge.locked {
@@ -279,84 +335,173 @@
     .reward-badge.unlocked {
       background: var(--coral);
       color: white;
-      box-shadow: 0 2px 8px rgba(224, 90, 90, 0.3);
+      box-shadow: 0 2px 12px rgba(224, 90, 90, 0.3);
+      animation: pop 0.4s ease;
     }
 
-    .reward-info { flex: 1; }
-    .reward-amount { font-weight: 700; color: var(--text); }
-    .reward-desc { font-size: 0.7rem; color: var(--muted); }
-    .reward-status { font-size: 0.7rem; font-weight: 600; }
-    .reward-status.locked { color: var(--muted); }
-    .reward-status.unlocked { color: var(--green); }
-
-    /* ===== FIN RÉCOMPENSES ===== */
-
-    .main {
-      padding: 0 14px;
-      max-width: 600px;
-      margin: 0 auto;
+    .reward-badge.unlocked:hover {
+      transform: scale(1.08);
     }
 
+    .reward-info {
+      flex: 1;
+    }
+
+    .reward-amount {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .reward-desc {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .reward-status {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 30px;
+      transition: all 0.3s;
+    }
+
+    .reward-status.locked {
+      color: var(--muted);
+      background: #f0ece6;
+    }
+
+    .reward-status.unlocked {
+      color: white;
+      background: var(--green);
+      box-shadow: 0 2px 8px rgba(76, 175, 130, 0.25);
+    }
+
+    /* Barème */
+    .rewards-legend {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1.5px dashed var(--border);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .rewards-legend strong {
+      color: var(--navy);
+    }
+
+    .rewards-legend span {
+      display: inline-block;
+      background: rgba(196, 96, 122, 0.08);
+      padding: 0 8px;
+      border-radius: 12px;
+      margin: 0 2px;
+    }
+
+    /* ===== CONGRATS BANNER amélioré ===== */
+    .congrats-banner {
+      background: linear-gradient(135deg, var(--green), #3CB870);
+      border-radius: var(--radius-sm);
+      color: white;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 16px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 28px rgba(76, 175, 130, 0.3);
+      display: none;
+      letter-spacing: 0.03em;
+      animation: slideDown 0.5s ease;
+    }
+
+    .congrats-banner.show {
+      display: block;
+    }
+
+    /* ===== ADD CARD améliorée ===== */
     .add-card {
       background: var(--card-bg);
       border: 2px solid var(--border);
-      border-radius: var(--r-lg);
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
-      margin: 14px 0;
+      margin-bottom: 16px;
       overflow: hidden;
+      transition: box-shadow 0.3s, border-color 0.3s;
+    }
+
+    .add-card:hover {
+      border-color: var(--navy);
+      box-shadow: 0 8px 28px rgba(196, 96, 122, 0.08);
     }
 
     .add-toggle {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 15px 18px;
+      gap: 12px;
+      padding: 16px 18px;
       cursor: pointer;
-      background: rgba(196, 96, 122, 0.04);
       user-select: none;
+      transition: background 0.2s;
+    }
+
+    .add-toggle:hover {
+      background: rgba(196, 96, 122, 0.04);
     }
 
     .add-toggle .icon-wrap {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       background: var(--navy);
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       color: white;
       font-weight: 700;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .add-toggle:hover .icon-wrap {
+      background: var(--coral);
+      transform: rotate(90deg);
     }
 
     .add-toggle .label {
       font-weight: 700;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       color: var(--navy);
       flex: 1;
     }
 
     .add-toggle .chevron {
       color: var(--muted);
-      font-size: 0.75rem;
-      transition: transform 0.25s;
+      font-size: 0.8rem;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .add-toggle.open .chevron { transform: rotate(180deg); }
+    .add-toggle.open .chevron {
+      transform: rotate(180deg);
+    }
 
     .add-form {
       display: none;
-      padding: 0 18px 18px;
+      padding: 0 18px 20px;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+      animation: slideDown 0.3s ease;
     }
-    .add-form.open { display: flex; }
+
+    .add-form.open {
+      display: flex;
+    }
 
     .field-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
     .field-label {
@@ -364,121 +509,155 @@
       font-weight: 700;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding-left: 2px;
+      letter-spacing: 0.08em;
+      padding-left: 4px;
     }
 
     input[type="text"] {
       border: 2px solid var(--border);
-      border-radius: var(--r-sm);
+      border-radius: var(--radius-sm);
       font-family: "Baloo 2", cursive;
-      font-size: 0.95rem;
+      font-size: 1rem;
       outline: none;
-      padding: 11px 15px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      padding: 12px 16px;
+      transition: border-color 0.3s, box-shadow 0.3s;
       width: 100%;
       background: white;
       color: var(--text);
       appearance: none;
     }
 
-    input[type="text"]::placeholder { color: #c4b4a4; }
+    input[type="text"]::placeholder {
+      color: #c4b4a4;
+    }
+
     input[type="text"]:focus {
       border-color: var(--navy);
-      box-shadow: 0 0 0 4px rgba(196, 96, 122, 0.1);
+      box-shadow: 0 0 0 4px rgba(196, 96, 122, 0.08);
     }
 
     .btn-add {
-      background: var(--navy);
+      background: linear-gradient(145deg, var(--navy), var(--navy2));
       border: none;
-      border-radius: var(--r-sm);
+      border-radius: var(--radius-sm);
       color: white;
       cursor: pointer;
       font-family: "Baloo 2", cursive;
-      font-size: 0.97rem;
+      font-size: 1rem;
       font-weight: 700;
-      min-height: 48px;
-      padding: 11px;
-      transition: opacity 0.2s, transform 0.15s;
+      min-height: 52px;
+      padding: 12px;
+      transition: transform 0.15s, box-shadow 0.3s;
       width: 100%;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      box-shadow: 0 4px 14px rgba(196, 96, 122, 0.25);
-    }
-    .btn-add:active {
-      opacity: 0.88;
-      transform: scale(0.97);
+      box-shadow: 0 4px 16px rgba(196, 96, 122, 0.2);
     }
 
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(196, 96, 122, 0.3);
+    }
+
+    .btn-add:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px rgba(196, 96, 122, 0.15);
+    }
+
+    /* ===== SEARCH améliorée ===== */
     .search-wrap {
       position: relative;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .search-icon {
       position: absolute;
-      left: 14px;
+      left: 16px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 0.95rem;
+      font-size: 1rem;
       pointer-events: none;
       color: var(--muted);
     }
 
-    #searchInput { padding-left: 40px; }
+    #searchInput {
+      padding-left: 44px;
+      border-radius: 50px;
+      border: 2px solid var(--border);
+      background: var(--card-bg);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
 
+    #searchInput:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 4px rgba(196, 96, 122, 0.06);
+    }
+
+    /* ===== FILTER TABS améliorées ===== */
     .filter-tabs {
       display: flex;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       overflow-x: auto;
-      padding-bottom: 2px;
+      padding-bottom: 4px;
       scrollbar-width: none;
     }
-    .filter-tabs::-webkit-scrollbar { display: none; }
+
+    .filter-tabs::-webkit-scrollbar {
+      display: none;
+    }
 
     .filter-tab {
-      background: white;
+      background: var(--card-bg);
       border: 2px solid var(--border);
       border-radius: 50px;
       color: var(--navy);
       cursor: pointer;
       font-family: "Baloo 2", cursive;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      padding: 7px 16px;
+      padding: 8px 20px;
       white-space: nowrap;
-      transition: 0.2s;
+      transition: all 0.25s;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+    }
+
+    .filter-tab:hover {
+      background: rgba(196, 96, 122, 0.06);
     }
 
     .filter-tab.active {
       background: var(--navy);
       border-color: var(--navy);
       color: white;
-      box-shadow: 0 4px 12px rgba(196, 96, 122, 0.25);
+      box-shadow: 0 4px 16px rgba(196, 96, 122, 0.2);
+      transform: scale(1.02);
     }
 
-    .theme-section { margin-bottom: 18px; }
+    /* ===== LISTE améliorée ===== */
+    .theme-section {
+      margin-bottom: 20px;
+      animation: fadeIn 0.4s ease;
+    }
 
     .theme-header {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 8px;
       padding: 0 4px;
     }
 
     .theme-dot {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 
     .theme-title {
-      font-family: "Baloo 2", cursive;
       font-size: 1.05rem;
       font-weight: 800;
       color: var(--navy);
@@ -493,90 +672,101 @@
       color: white;
       font-size: 0.7rem;
       font-weight: 700;
-      padding: 3px 10px;
+      padding: 4px 12px;
       letter-spacing: 0.04em;
+      box-shadow: 0 2px 8px rgba(196, 96, 122, 0.15);
     }
 
     .theme-card {
       background: var(--card-bg);
       border: 2px solid var(--border);
-      border-radius: var(--r-lg);
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      transition: box-shadow 0.3s;
+    }
+
+    .theme-card:hover {
+      box-shadow: 0 8px 28px rgba(196, 96, 122, 0.06);
     }
 
     .chapter-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-height: 54px;
-      padding: 10px 14px;
-      border-bottom: 1.5px solid rgba(200, 180, 160, 0.3);
-      transition: background 0.15s;
+      gap: 14px;
+      min-height: 56px;
+      padding: 10px 16px;
+      border-bottom: 1.5px solid rgba(200, 180, 160, 0.15);
+      transition: background 0.2s, transform 0.15s;
       position: relative;
     }
-    .chapter-item:last-child { border-bottom: none; }
-    .chapter-item:active { background: rgba(196, 96, 122, 0.04); }
-    .chapter-item.is-done { background: rgba(76, 175, 130, 0.04); }
+
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+
+    .chapter-item:hover {
+      background: rgba(196, 96, 122, 0.03);
+    }
+
+    .chapter-item:active {
+      transform: scale(0.99);
+    }
+
+    .chapter-item.is-done {
+      background: rgba(76, 175, 130, 0.04);
+    }
 
     .custom-cb {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      border: 2px solid var(--border);
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      border: 2.5px solid var(--border);
       background: white;
       flex-shrink: 0;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: 0.2s;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
+    }
+
+    .custom-cb:hover {
+      border-color: var(--green);
+      transform: scale(1.06);
     }
 
     .custom-cb.checked {
       background: linear-gradient(135deg, var(--green), #3CB870);
       border-color: transparent;
-      box-shadow: 0 3px 10px rgba(76, 175, 130, 0.4);
+      box-shadow: 0 3px 12px rgba(76, 175, 130, 0.35);
+      animation: pop 0.3s ease;
     }
 
     .custom-cb.checked::after {
       content: "";
       width: 6px;
-      height: 11px;
+      height: 12px;
       border: solid white;
-      border-width: 0 2.5px 2.5px 0;
-      transform: rotate(42deg) translate(-1px, -1px);
+      border-width: 0 3px 3px 0;
+      transform: rotate(42deg) translate(-1px, -2px);
       display: block;
     }
 
-    .chapter-item input[type="checkbox"] { display: none; }
-
     .chapter-name {
       flex: 1;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       line-height: 1.4;
       color: var(--text);
       font-weight: 500;
-      transition: color 0.2s;
+      transition: color 0.3s;
       word-break: break-word;
     }
+
     .chapter-name.done {
       color: var(--muted);
-      text-decoration: line-through rgba(138, 122, 106, 0.5);
-    }
-
-    .chapter-edit-input {
-      flex: 1;
-      border: 2px solid var(--navy);
-      border-radius: 8px;
-      font-family: "Baloo 2", cursive;
-      font-size: 0.88rem;
-      padding: 6px 10px;
-      outline: none;
-      background: white;
-      color: var(--text);
-      box-shadow: 0 0 0 4px rgba(196, 96, 122, 0.1);
+      text-decoration: line-through rgba(138, 122, 106, 0.4);
     }
 
     .btn-actions {
@@ -588,78 +778,116 @@
     .btn-icon {
       background: none;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 1rem;
-      width: 34px;
-      height: 34px;
+      font-size: 1.05rem;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s, transform 0.1s;
+      transition: all 0.2s;
       color: var(--muted);
     }
-    .btn-icon:active { transform: scale(0.9); }
-    .btn-icon.edit:active { background: rgba(196, 96, 122, 0.1); }
-    .btn-icon.save { color: var(--green); }
-    .btn-icon.save:active { background: rgba(76, 175, 130, 0.12); }
-    .btn-icon.cancel { color: #999; }
-    .btn-icon.del:active { background: rgba(224, 90, 90, 0.1); }
-    .btn-icon.del { color: #c9a0a0; }
 
-    /* TOAST */
+    .btn-icon:hover {
+      background: rgba(196, 96, 122, 0.08);
+      color: var(--navy);
+    }
+
+    .btn-icon:active {
+      transform: scale(0.88);
+    }
+
+    .btn-icon.del:hover {
+      color: var(--coral);
+      background: rgba(224, 90, 90, 0.08);
+    }
+
+    .btn-icon.save {
+      color: var(--green);
+    }
+
+    .btn-icon.save:hover {
+      background: rgba(76, 175, 130, 0.08);
+    }
+
+    /* ===== TOAST amélioré ===== */
     .toast {
       position: fixed;
-      bottom: 28px;
+      bottom: 30px;
       left: 50%;
-      transform: translateX(-50%) translateY(90px);
+      transform: translateX(-50%) translateY(100px);
       background: var(--navy);
       color: white;
-      padding: 13px 22px;
+      padding: 14px 28px;
       border-radius: 50px;
       font-family: "Baloo 2", cursive;
-      font-size: 0.87rem;
+      font-size: 0.9rem;
       font-weight: 600;
       z-index: 9999;
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      white-space: nowrap;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
       pointer-events: none;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-
-    .empty {
+      max-width: 90%;
       text-align: center;
-      padding: 50px 20px;
-      color: var(--muted);
+      white-space: nowrap;
     }
-    .empty .search-big { font-size: 2.5rem; margin-bottom: 10px; }
-    .empty p { font-size: 0.9rem; line-height: 1.6; font-weight: 500; }
 
-    .congrats-banner {
-      background: linear-gradient(135deg, var(--green), #3CB870);
-      border-radius: var(--r-md);
-      color: white;
-      font-weight: 700;
-      font-family: "Baloo 2", cursive;
-      font-size: 0.92rem;
-      padding: 14px 18px;
-      text-align: center;
-      margin-bottom: 14px;
-      box-shadow: 0 6px 24px rgba(76, 175, 130, 0.3);
-      display: none;
-      letter-spacing: 0.03em;
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
     }
-    .congrats-banner.show { display: block; }
 
-    .divider {
-      border-top: 2px dashed var(--border);
-      margin: 4px 0 12px;
+    /* ===== ANIMATIONS ===== */
+    @keyframes pop {
+      0% { transform: scale(0.6); opacity: 0.5; }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .content { padding: 0 10px; }
+      .header { padding: 20px 14px 18px; margin: 0 -10px 16px; }
+      .header h1 { font-size: 1.6rem; }
+      .header-sub { font-size: 0.7rem; }
+      .stats-row { gap: 6px; }
+      .stat-card { padding: 10px 4px; }
+      .stat-num { font-size: 1.8rem; }
+      .stat-label { font-size: 0.6rem; }
+      .progress-section { flex-wrap: wrap; justify-content: center; padding: 14px; gap: 12px; }
+      .ring-wrap { width: 74px; height: 74px; }
+      .ring-pct { font-size: 1.1rem; }
+      .progress-msg .msg-title { font-size: 0.95rem; }
+      .progress-msg .msg-sub { font-size: 0.75rem; }
+      .rewards-section { padding: 12px 14px; }
+      .reward-item { font-size: 0.8rem; padding: 6px 0; }
+      .reward-badge { width: 28px; height: 28px; font-size: 0.7rem; }
+      .chapter-item { padding: 8px 12px; gap: 10px; min-height: 48px; }
+      .custom-cb { width: 24px; height: 24px; }
+      .chapter-name { font-size: 0.82rem; }
+      .btn-icon { width: 32px; height: 32px; font-size: 0.95rem; }
+      .filter-tab { font-size: 0.7rem; padding: 6px 14px; }
+      .btn-add { font-size: 0.9rem; min-height: 44px; }
+      input[type="text"] { font-size: 0.9rem; padding: 10px 14px; }
+      .toast { font-size: 0.8rem; padding: 12px 20px; white-space: normal; max-width: 85%; }
     }
 
     @media (max-width: 360px) {
-      .header h1 { font-size: 1.6rem; }
-      .stat-num { font-size: 1.8rem; }
+      .header h1 { font-size: 1.3rem; }
+      .stat-num { font-size: 1.5rem; }
+      .ring-wrap { width: 64px; height: 64px; }
+      .ring-pct { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -668,7 +896,7 @@
 <div class="content">
   <!-- HEADER -->
   <header class="header">
-    <h1>Ma Révision Médicale</h1>
+    <h1>📚 Ma Révision Médicale</h1>
     <div class="header-sub">Tableau de bord · 4ème année 2025/2026</div>
   </header>
 
@@ -676,15 +904,15 @@
   <div class="stats-row">
     <div class="stat-card total">
       <div class="stat-num" id="statTotal">156</div>
-      <div class="stat-label">Total</div>
+      <div class="stat-label">📖 Total</div>
     </div>
     <div class="stat-card done">
       <div class="stat-num" id="statDone">11</div>
-      <div class="stat-label">Révisés</div>
+      <div class="stat-label">✅ Révisés</div>
     </div>
     <div class="stat-card left">
       <div class="stat-num" id="statLeft">145</div>
-      <div class="stat-label">Restants</div>
+      <div class="stat-label">⏳ Restants</div>
     </div>
   </div>
 
@@ -715,19 +943,24 @@
   <!-- RÉCOMPENSES -->
   <div class="rewards-section">
     <div class="rewards-title">
-      <span>🏆 Récompenses (100 € max)</span>
+      <span>🏆 Récompenses</span>
       <span id="pointsDisplay">0.00 €</span>
     </div>
     <div id="rewardsList"></div>
-    <!-- Petit rappel du barème -->
-    <div style="margin-top:8px; font-size:0.7rem; color:var(--muted); border-top:1px dashed var(--border); padding-top:8px; text-align:center;">
-      <strong>Barème :</strong> Dermato → 3.125€ · Infectio → 6.25€ · Pneumo → 12.50€ · Cardio+Neuro → 25€ · Traumato → 50€
+    <div class="rewards-legend">
+      <strong>Barème :</strong>
+      <span>Dermato → 3.125 €</span>
+      <span>Infectio → 6.25 €</span>
+      <span>Pneumo → 12.50 €</span>
+      <span>Cardio+Neuro → 25 €</span>
+      <span>Traumato → 50 €</span>
+      <br /><span style="background:transparent; color:var(--muted); font-size:0.65rem;">(cumulable jusqu'à 100 €)</span>
     </div>
   </div>
 
   <!-- CONGRATS BANNER -->
   <div class="congrats-banner" id="congratsBanner">
-    Bravo Piso ! Tu as révisé tous les chapitres !
+    🎉 Bravo Piso ! Tu as révisé tous les chapitres !
   </div>
 
   <!-- ADD FORM -->
@@ -739,11 +972,11 @@
     </div>
     <div class="add-form" id="addForm">
       <div class="field-group">
-        <div class="field-label">Nom du chapitre</div>
+        <div class="field-label">📝 Nom du chapitre</div>
         <input type="text" id="chapterName" placeholder="ex : Insuffisance cardiaque" />
       </div>
       <div class="field-group">
-        <div class="field-label">Thème / Spécialité</div>
+        <div class="field-label">📂 Thème / Spécialité</div>
         <input type="text" id="chapterTheme" list="themeList" placeholder="ex : Cardiologie" />
         <datalist id="themeList">
           <option value="Cardiologie" />
@@ -756,7 +989,7 @@
           <option value="Traumatologie" />
         </datalist>
       </div>
-      <button class="btn-add" id="addChapterBtn">Ajouter le chapitre</button>
+      <button class="btn-add" id="addChapterBtn">➕ Ajouter le chapitre</button>
     </div>
   </div>
 
@@ -768,9 +1001,9 @@
 
   <!-- FILTER TABS -->
   <div class="filter-tabs">
-    <button class="filter-tab active" data-filter="all">Tous</button>
-    <button class="filter-tab" data-filter="todo">À réviser</button>
-    <button class="filter-tab" data-filter="done">Révisés</button>
+    <button class="filter-tab active" data-filter="all">📋 Tous</button>
+    <button class="filter-tab" data-filter="todo">⏳ À réviser</button>
+    <button class="filter-tab" data-filter="done">✅ Révisés</button>
   </div>
 
   <!-- LIST -->
@@ -802,7 +1035,6 @@
   // 2. DONNÉES INITIALES (156 chapitres, 11 révisés)
   // ================================================================
   const DEFAULT_CHAPTERS = [
-    // Cardiologie (13, 0 révisés)
     { name: "HTA essentielle", theme: "Cardiologie", done: false },
     { name: "Crise aiguë hypertensive", theme: "Cardiologie", done: false },
     { name: "Insuffisance mitrale (IM)", theme: "Cardiologie", done: false },
@@ -816,8 +1048,6 @@
     { name: "Choc cardiogénique", theme: "Cardiologie", done: false },
     { name: "HTAP", theme: "Cardiologie", done: false },
     { name: "Insuffisance tricuspidienne", theme: "Cardiologie", done: false },
-
-    // Dermatologie (14, 4 révisés)
     { name: "Psoriasis", theme: "Dermatologie", done: true },
     { name: "Syphilis", theme: "Dermatologie", done: true },
     { name: "Dermatite atopique", theme: "Dermatologie", done: true },
@@ -832,8 +1062,6 @@
     { name: "Grosse jambe rouge aiguë", theme: "Dermatologie", done: false },
     { name: "Érythème noueux", theme: "Dermatologie", done: false },
     { name: "Gale (scabiose)", theme: "Dermatologie", done: false },
-
-    // MALADIE INFECTIEUSE (24, 0 révisés)
     { name: "Généralité sur la prévention et contrôle des infections", theme: "MALADIE INFECTIEUSE", done: false },
     { name: "Hygiène des mains", theme: "MALADIE INFECTIEUSE", done: false },
     { name: "Tenue de soignant", theme: "MALADIE INFECTIEUSE", done: false },
@@ -858,8 +1086,6 @@
     { name: "PAC", theme: "MALADIE INFECTIEUSE", done: false },
     { name: "IST", theme: "MALADIE INFECTIEUSE", done: false },
     { name: "VIH", theme: "MALADIE INFECTIEUSE", done: false },
-
-    // Neurologie (33, 2 révisés)
     { name: "AVC ischémique", theme: "Neurologie", done: true },
     { name: "Migraine", theme: "Neurologie", done: false },
     { name: "Épilepsie", theme: "Neurologie", done: false },
@@ -893,8 +1119,6 @@
     { name: "Hemorragie méningée spontanée", theme: "Neurologie", done: false },
     { name: "Coeur pulmonaire chronique", theme: "Neurologie", done: false },
     { name: "Généralité sur la tuberculose", theme: "Neurologie", done: false },
-
-    // Pneumologie (29, 2 révisés)
     { name: "PAC (Pneumonie aiguë communautaire)", theme: "Pneumologie", done: false },
     { name: "Dilatation des bronches (DDB)", theme: "Pneumologie", done: false },
     { name: "Pneumopathies interstitielles diffuses", theme: "Pneumologie", done: false },
@@ -924,8 +1148,6 @@
     { name: "Pathologie médiastinale", theme: "Pneumologie", done: false },
     { name: "Syndrome apnée du sommeil", theme: "Pneumologie", done: false },
     { name: "Traitement tuberculose", theme: "Pneumologie", done: false },
-
-    // Psychiatrie (17, 1 révisé)
     { name: "Complications neuropsy de l'alcoolisme", theme: "Psychiatrie", done: false },
     { name: "Suicide et crise suicidaire", theme: "Psychiatrie", done: false },
     { name: "Hystérie", theme: "Psychiatrie", done: false },
@@ -943,8 +1165,6 @@
     { name: "Généralité sur les névroses", theme: "Psychiatrie", done: false },
     { name: "Les pathologies psychiatriques", theme: "Psychiatrie", done: false },
     { name: "Troubles psychiques de la grossesse et du post partum", theme: "Psychiatrie", done: false },
-
-    // Rhumatologie (13, 1 révisé)
     { name: "Rhumatisme microcristalline", theme: "Rhumatologie", done: false },
     { name: "Spondylarthrite inflammatoire", theme: "Rhumatologie", done: false },
     { name: "Goutte", theme: "Rhumatologie", done: false },
@@ -958,8 +1178,6 @@
     { name: "Généralité sur les tendinopathies", theme: "Rhumatologie", done: false },
     { name: "Infections ostéo articulaires (arthrite septique)", theme: "Rhumatologie", done: false },
     { name: "Spondylodiscite infectieuse à germes banales", theme: "Rhumatologie", done: false },
-
-    // Traumatologie (13, 1 révisé)
     { name: "Pathologie de la coiffe des rotateurs", theme: "Traumatologie", done: false },
     { name: "Ostéoarthrite TB", theme: "Traumatologie", done: false },
     { name: "Traitement chir. de la gonarthrose", theme: "Traumatologie", done: false },
@@ -976,38 +1194,43 @@
   ];
 
   // ================================================================
-  // 3. NOUVELLE LOGIQUE DE RÉCOMPENSES PAR THÈME COMPLET
+  // 3. RÉCOMPENSES PAR THÈME COMPLET
   // ================================================================
   const REWARDS = [
     {
       level: 1,
       condition: (chapters) => isThemeComplete(chapters, "Dermatologie"),
       amount: 3.125,
-      label: "Dermatologie terminée"
+      label: "Dermatologie terminée",
+      emoji: "🧴"
     },
     {
       level: 2,
       condition: (chapters) => isThemeComplete(chapters, "MALADIE INFECTIEUSE"),
       amount: 6.25,
-      label: "Infectiologie terminée"
+      label: "Infectiologie terminée",
+      emoji: "🦠"
     },
     {
       level: 3,
       condition: (chapters) => isThemeComplete(chapters, "Pneumologie"),
       amount: 12.50,
-      label: "Pneumologie terminée"
+      label: "Pneumologie terminée",
+      emoji: "🫁"
     },
     {
       level: 4,
       condition: (chapters) => isThemeComplete(chapters, "Cardiologie") && isThemeComplete(chapters, "Neurologie"),
       amount: 25.00,
-      label: "Cardiologie + Neurologie terminées"
+      label: "Cardiologie + Neurologie terminées",
+      emoji: "❤️🧠"
     },
     {
       level: 5,
       condition: (chapters) => isThemeComplete(chapters, "Traumatologie"),
       amount: 50.00,
-      label: "Traumatologie terminée"
+      label: "Traumatologie terminée",
+      emoji: "🦴"
     }
   ];
 
@@ -1021,7 +1244,7 @@
   // 4. ÉTAT LOCAL
   // ================================================================
   let chapters = [];
-  let unlockedLevels = []; // stocke les niveaux déjà débloqués
+  let unlockedLevels = [];
 
   // ================================================================
   // 5. RÉFÉRENCES DOM
@@ -1048,7 +1271,7 @@
   const toast = $('toast');
 
   // ================================================================
-  // 6. FONCTIONS (stats, progression, liste)
+  // 6. FONCTIONS
   // ================================================================
   function getDoneCount(arr) { return arr.filter(ch => ch.done).length; }
 
@@ -1095,7 +1318,6 @@
       }
     });
 
-    // Calcul du total cumulé
     let totalEarned = 0;
     REWARDS.forEach(r => {
       if (unlockedLevels.includes(r.level)) {
@@ -1105,7 +1327,6 @@
 
     pointsDisplay.textContent = `${totalEarned.toFixed(2)} €`;
 
-    // Génération de la liste
     let html = '';
     REWARDS.forEach(r => {
       const unlocked = unlockedLevels.includes(r.level);
@@ -1114,7 +1335,7 @@
       const statusClass = unlocked ? 'unlocked' : 'locked';
       html += `
         <div class="reward-item">
-          <div class="reward-badge ${badgeClass}">${r.level}</div>
+          <div class="reward-badge ${badgeClass}">${r.emoji}</div>
           <div class="reward-info">
             <div class="reward-amount">${r.amount.toFixed(2)} €</div>
             <div class="reward-desc">${r.label}</div>
@@ -1125,7 +1346,6 @@
     });
     rewardsList.innerHTML = html;
 
-    // Notifications pour les nouveaux paliers
     newlyUnlocked.forEach(r => {
       showToast(`🎉 Félicitations Piso ! Tu as débloqué ${r.amount.toFixed(2)} € (${r.label}) !`);
     });

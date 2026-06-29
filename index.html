@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Ma Révision Médicale</title>
 
-  <!-- Police Baloo 2 (comme l'original) -->
+  <!-- Police Baloo 2 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -16,7 +16,7 @@
 
   <style>
     /* ============================================================
-       CSS EXACT DE VOTRE ANCIEN SITE (recopié depuis le fichier joint)
+       STYLE EXACT DE VOTRE ANCIEN SITE (inchangé)
        ============================================================ */
     :root {
       --cream: #FFF8F0;
@@ -37,12 +37,7 @@
       --shadow: 0 4px 20px rgba(196, 96, 122, 0.10);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
       background-color: var(--cream);
@@ -65,10 +60,7 @@
       z-index: 0;
     }
 
-    .content {
-      position: relative;
-      z-index: 1;
-    }
+    .content { position: relative; z-index: 1; }
 
     .header {
       background: var(--navy);
@@ -168,9 +160,7 @@
       flex-shrink: 0;
     }
 
-    .ring-wrap svg {
-      transform: rotate(-90deg);
-    }
+    .ring-wrap svg { transform: rotate(-90deg); }
 
     .ring-bg {
       fill: none;
@@ -210,10 +200,7 @@
       letter-spacing: 0.08em;
     }
 
-    .progress-msg {
-      flex: 1;
-    }
-
+    .progress-msg { flex: 1; }
     .progress-msg .msg-title {
       font-family: "Baloo 2", cursive;
       font-size: 1.05rem;
@@ -221,7 +208,6 @@
       color: var(--navy);
       margin-bottom: 4px;
     }
-
     .progress-msg .msg-sub {
       font-size: 0.78rem;
       color: var(--muted);
@@ -229,7 +215,7 @@
       font-weight: 500;
     }
 
-    /* ===== SECTION RÉCOMPENSES (harmonisée avec le style original) ===== */
+    /* ===== SECTION RÉCOMPENSES ===== */
     .rewards-section {
       background: var(--card-bg);
       border: 2px solid var(--border);
@@ -271,10 +257,7 @@
       border-bottom: 1.5px solid rgba(200, 180, 160, 0.3);
       font-size: 0.9rem;
     }
-
-    .reward-item:last-child {
-      border-bottom: none;
-    }
+    .reward-item:last-child { border-bottom: none; }
 
     .reward-badge {
       width: 28px;
@@ -299,32 +282,12 @@
       box-shadow: 0 2px 8px rgba(224, 90, 90, 0.3);
     }
 
-    .reward-info {
-      flex: 1;
-    }
-
-    .reward-amount {
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .reward-desc {
-      font-size: 0.7rem;
-      color: var(--muted);
-    }
-
-    .reward-status {
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-
-    .reward-status.locked {
-      color: var(--muted);
-    }
-
-    .reward-status.unlocked {
-      color: var(--green);
-    }
+    .reward-info { flex: 1; }
+    .reward-amount { font-weight: 700; color: var(--text); }
+    .reward-desc { font-size: 0.7rem; color: var(--muted); }
+    .reward-status { font-size: 0.7rem; font-weight: 600; }
+    .reward-status.locked { color: var(--muted); }
+    .reward-status.unlocked { color: var(--green); }
 
     /* ===== FIN RÉCOMPENSES ===== */
 
@@ -380,9 +343,7 @@
       transition: transform 0.25s;
     }
 
-    .add-toggle.open .chevron {
-      transform: rotate(180deg);
-    }
+    .add-toggle.open .chevron { transform: rotate(180deg); }
 
     .add-form {
       display: none;
@@ -390,10 +351,7 @@
       flex-direction: column;
       gap: 12px;
     }
-
-    .add-form.open {
-      display: flex;
-    }
+    .add-form.open { display: flex; }
 
     .field-group {
       display: flex;
@@ -424,10 +382,7 @@
       appearance: none;
     }
 
-    input[type="text"]::placeholder {
-      color: #c4b4a4;
-    }
-
+    input[type="text"]::placeholder { color: #c4b4a4; }
     input[type="text"]:focus {
       border-color: var(--navy);
       box-shadow: 0 0 0 4px rgba(196, 96, 122, 0.1);
@@ -450,7 +405,6 @@
       text-transform: uppercase;
       box-shadow: 0 4px 14px rgba(196, 96, 122, 0.25);
     }
-
     .btn-add:active {
       opacity: 0.88;
       transform: scale(0.97);
@@ -471,9 +425,7 @@
       color: var(--muted);
     }
 
-    #searchInput {
-      padding-left: 40px;
-    }
+    #searchInput { padding-left: 40px; }
 
     .filter-tabs {
       display: flex;
@@ -483,10 +435,7 @@
       padding-bottom: 2px;
       scrollbar-width: none;
     }
-
-    .filter-tabs::-webkit-scrollbar {
-      display: none;
-    }
+    .filter-tabs::-webkit-scrollbar { display: none; }
 
     .filter-tab {
       background: white;
@@ -511,9 +460,7 @@
       box-shadow: 0 4px 12px rgba(196, 96, 122, 0.25);
     }
 
-    .theme-section {
-      margin-bottom: 18px;
-    }
+    .theme-section { margin-bottom: 18px; }
 
     .theme-header {
       display: flex;
@@ -568,18 +515,9 @@
       transition: background 0.15s;
       position: relative;
     }
-
-    .chapter-item:last-child {
-      border-bottom: none;
-    }
-
-    .chapter-item:active {
-      background: rgba(196, 96, 122, 0.04);
-    }
-
-    .chapter-item.is-done {
-      background: rgba(76, 175, 130, 0.04);
-    }
+    .chapter-item:last-child { border-bottom: none; }
+    .chapter-item:active { background: rgba(196, 96, 122, 0.04); }
+    .chapter-item.is-done { background: rgba(76, 175, 130, 0.04); }
 
     .custom-cb {
       width: 26px;
@@ -612,9 +550,7 @@
       display: block;
     }
 
-    .chapter-item input[type="checkbox"] {
-      display: none;
-    }
+    .chapter-item input[type="checkbox"] { display: none; }
 
     .chapter-name {
       flex: 1;
@@ -625,7 +561,6 @@
       transition: color 0.2s;
       word-break: break-word;
     }
-
     .chapter-name.done {
       color: var(--muted);
       text-decoration: line-through rgba(138, 122, 106, 0.5);
@@ -664,36 +599,15 @@
       transition: background 0.15s, transform 0.1s;
       color: var(--muted);
     }
+    .btn-icon:active { transform: scale(0.9); }
+    .btn-icon.edit:active { background: rgba(196, 96, 122, 0.1); }
+    .btn-icon.save { color: var(--green); }
+    .btn-icon.save:active { background: rgba(76, 175, 130, 0.12); }
+    .btn-icon.cancel { color: #999; }
+    .btn-icon.del:active { background: rgba(224, 90, 90, 0.1); }
+    .btn-icon.del { color: #c9a0a0; }
 
-    .btn-icon:active {
-      transform: scale(0.9);
-    }
-
-    .btn-icon.edit:active {
-      background: rgba(196, 96, 122, 0.1);
-    }
-
-    .btn-icon.save {
-      color: var(--green);
-    }
-
-    .btn-icon.save:active {
-      background: rgba(76, 175, 130, 0.12);
-    }
-
-    .btn-icon.cancel {
-      color: #999;
-    }
-
-    .btn-icon.del:active {
-      background: rgba(224, 90, 90, 0.1);
-    }
-
-    .btn-icon.del {
-      color: #c9a0a0;
-    }
-
-    /* TOAST (harmonisé) */
+    /* TOAST */
     .toast {
       position: fixed;
       bottom: 28px;
@@ -712,27 +626,15 @@
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
       pointer-events: none;
     }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
 
     .empty {
       text-align: center;
       padding: 50px 20px;
       color: var(--muted);
     }
-
-    .empty .search-big {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .empty p {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      font-weight: 500;
-    }
+    .empty .search-big { font-size: 2.5rem; margin-bottom: 10px; }
+    .empty p { font-size: 0.9rem; line-height: 1.6; font-weight: 500; }
 
     .congrats-banner {
       background: linear-gradient(135deg, var(--green), #3CB870);
@@ -748,10 +650,7 @@
       display: none;
       letter-spacing: 0.03em;
     }
-
-    .congrats-banner.show {
-      display: block;
-    }
+    .congrats-banner.show { display: block; }
 
     .divider {
       border-top: 2px dashed var(--border);
@@ -816,10 +715,14 @@
   <!-- RÉCOMPENSES -->
   <div class="rewards-section">
     <div class="rewards-title">
-      <span>🏆 Récompenses (100 €)</span>
-      <span id="pointsDisplay">0 €</span>
+      <span>🏆 Récompenses (100 € max)</span>
+      <span id="pointsDisplay">0.00 €</span>
     </div>
     <div id="rewardsList"></div>
+    <!-- Petit rappel du barème -->
+    <div style="margin-top:8px; font-size:0.7rem; color:var(--muted); border-top:1px dashed var(--border); padding-top:8px; text-align:center;">
+      <strong>Barème :</strong> Dermato → 3.125€ · Infectio → 6.25€ · Pneumo → 12.50€ · Cardio+Neuro → 25€ · Traumato → 50€
+    </div>
   </div>
 
   <!-- CONGRATS BANNER -->
@@ -879,7 +782,7 @@
 
 <script>
   // ================================================================
-  // 1. CONFIGURATION FIREBASE (VOS CLÉS)
+  // 1. CONFIGURATION FIREBASE
   // ================================================================
   const firebaseConfig = {
     apiKey: "AIzaSyAwVb1EtW4M65TcQlCUpS8b7VeaEgCLya0",
@@ -896,11 +799,10 @@
   const dataRef = db.ref('/data');
 
   // ================================================================
-  // 2. DONNÉES INITIALES (LES 156 CHAPITRES AVEC LEURS STATUTS)
-  //    Extraites du fichier joint "Ma Révision Médicale (1).html"
+  // 2. DONNÉES INITIALES (156 chapitres, 11 révisés)
   // ================================================================
   const DEFAULT_CHAPTERS = [
-    // ---- Cardiologie (13, 0 révisés) ----
+    // Cardiologie (13, 0 révisés)
     { name: "HTA essentielle", theme: "Cardiologie", done: false },
     { name: "Crise aiguë hypertensive", theme: "Cardiologie", done: false },
     { name: "Insuffisance mitrale (IM)", theme: "Cardiologie", done: false },
@@ -915,7 +817,7 @@
     { name: "HTAP", theme: "Cardiologie", done: false },
     { name: "Insuffisance tricuspidienne", theme: "Cardiologie", done: false },
 
-    // ---- Dermatologie (14, 4 révisés) ----
+    // Dermatologie (14, 4 révisés)
     { name: "Psoriasis", theme: "Dermatologie", done: true },
     { name: "Syphilis", theme: "Dermatologie", done: true },
     { name: "Dermatite atopique", theme: "Dermatologie", done: true },
@@ -931,7 +833,7 @@
     { name: "Érythème noueux", theme: "Dermatologie", done: false },
     { name: "Gale (scabiose)", theme: "Dermatologie", done: false },
 
-    // ---- MALADIE INFECTIEUSE (24, 0 révisés) ----
+    // MALADIE INFECTIEUSE (24, 0 révisés)
     { name: "Généralité sur la prévention et contrôle des infections", theme: "MALADIE INFECTIEUSE", done: false },
     { name: "Hygiène des mains", theme: "MALADIE INFECTIEUSE", done: false },
     { name: "Tenue de soignant", theme: "MALADIE INFECTIEUSE", done: false },
@@ -957,7 +859,7 @@
     { name: "IST", theme: "MALADIE INFECTIEUSE", done: false },
     { name: "VIH", theme: "MALADIE INFECTIEUSE", done: false },
 
-    // ---- Neurologie (33, 2 révisés) ----
+    // Neurologie (33, 2 révisés)
     { name: "AVC ischémique", theme: "Neurologie", done: true },
     { name: "Migraine", theme: "Neurologie", done: false },
     { name: "Épilepsie", theme: "Neurologie", done: false },
@@ -992,7 +894,7 @@
     { name: "Coeur pulmonaire chronique", theme: "Neurologie", done: false },
     { name: "Généralité sur la tuberculose", theme: "Neurologie", done: false },
 
-    // ---- Pneumologie (29, 2 révisés) ----
+    // Pneumologie (29, 2 révisés)
     { name: "PAC (Pneumonie aiguë communautaire)", theme: "Pneumologie", done: false },
     { name: "Dilatation des bronches (DDB)", theme: "Pneumologie", done: false },
     { name: "Pneumopathies interstitielles diffuses", theme: "Pneumologie", done: false },
@@ -1023,7 +925,7 @@
     { name: "Syndrome apnée du sommeil", theme: "Pneumologie", done: false },
     { name: "Traitement tuberculose", theme: "Pneumologie", done: false },
 
-    // ---- Psychiatrie (17, 1 révisé) ----
+    // Psychiatrie (17, 1 révisé)
     { name: "Complications neuropsy de l'alcoolisme", theme: "Psychiatrie", done: false },
     { name: "Suicide et crise suicidaire", theme: "Psychiatrie", done: false },
     { name: "Hystérie", theme: "Psychiatrie", done: false },
@@ -1042,7 +944,7 @@
     { name: "Les pathologies psychiatriques", theme: "Psychiatrie", done: false },
     { name: "Troubles psychiques de la grossesse et du post partum", theme: "Psychiatrie", done: false },
 
-    // ---- Rhumatologie (13, 1 révisé) ----
+    // Rhumatologie (13, 1 révisé)
     { name: "Rhumatisme microcristalline", theme: "Rhumatologie", done: false },
     { name: "Spondylarthrite inflammatoire", theme: "Rhumatologie", done: false },
     { name: "Goutte", theme: "Rhumatologie", done: false },
@@ -1057,7 +959,7 @@
     { name: "Infections ostéo articulaires (arthrite septique)", theme: "Rhumatologie", done: false },
     { name: "Spondylodiscite infectieuse à germes banales", theme: "Rhumatologie", done: false },
 
-    // ---- Traumatologie (13, 1 révisé) ----
+    // Traumatologie (13, 1 révisé)
     { name: "Pathologie de la coiffe des rotateurs", theme: "Traumatologie", done: false },
     { name: "Ostéoarthrite TB", theme: "Traumatologie", done: false },
     { name: "Traitement chir. de la gonarthrose", theme: "Traumatologie", done: false },
@@ -1074,10 +976,8 @@
   ];
 
   // ================================================================
-  // 3. NOUVEAU SYSTÈME DE RÉCOMPENSES (PAR THÈME)
+  // 3. NOUVELLE LOGIQUE DE RÉCOMPENSES PAR THÈME COMPLET
   // ================================================================
-  // Chaque palier est défini par une condition (thème ou combinaison de thèmes)
-  // et un montant.
   const REWARDS = [
     {
       level: 1,
@@ -1101,7 +1001,7 @@
       level: 4,
       condition: (chapters) => isThemeComplete(chapters, "Cardiologie") && isThemeComplete(chapters, "Neurologie"),
       amount: 25.00,
-      label: "Cardio + Neuro terminées"
+      label: "Cardiologie + Neurologie terminées"
     },
     {
       level: 5,
@@ -1111,7 +1011,6 @@
     }
   ];
 
-  // Fonction utilitaire : vérifie si tous les chapitres d'un thème sont révisés
   function isThemeComplete(chapters, theme) {
     const themeChapters = chapters.filter(ch => ch.theme === theme);
     if (themeChapters.length === 0) return false;
@@ -1166,12 +1065,11 @@
     const total = chapters.length;
     const done = getDoneCount(chapters);
     const pct = total === 0 ? 0 : Math.min(100, Math.round((done / total) * 100));
-    const circumference = 2 * Math.PI * 37; // ≈ 232.5
+    const circumference = 2 * Math.PI * 37;
     const offset = circumference - (pct / 100) * circumference;
     ringFill.style.strokeDashoffset = offset;
     ringPct.textContent = pct + '%';
 
-    // Messages personnalisés pour Piso
     let msg, sub;
     if (pct === 0) { msg = "Bienvenue Piso !"; sub = "Commence tes révisions 💪"; }
     else if (pct < 20) { msg = "Belle entrée en matière Piso"; sub = "Continue, ça va venir !"; }
@@ -1188,7 +1086,6 @@
   }
 
   function renderRewards() {
-    // Vérifier quels paliers sont débloqués
     const newlyUnlocked = [];
     REWARDS.forEach(r => {
       const isUnlocked = r.condition(chapters);
@@ -1198,7 +1095,7 @@
       }
     });
 
-    // Calcul du total des gains (cumul des montants des niveaux débloqués)
+    // Calcul du total cumulé
     let totalEarned = 0;
     REWARDS.forEach(r => {
       if (unlockedLevels.includes(r.level)) {
@@ -1206,7 +1103,6 @@
       }
     });
 
-    // Affichage du total gagné
     pointsDisplay.textContent = `${totalEarned.toFixed(2)} €`;
 
     // Génération de la liste
@@ -1378,7 +1274,6 @@
       const arr = Object.keys(data).map(key => ({ key, ...data[key] }));
       chapters = arr;
     } else {
-      // Première ouverture : on injecte les 156 chapitres
       const initialData = {};
       DEFAULT_CHAPTERS.forEach(ch => {
         const key = dataRef.push().key;

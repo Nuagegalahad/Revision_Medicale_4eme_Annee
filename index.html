@@ -15,7 +15,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-
+    /* ============================================================
+       CSS EXACT DE VOTRE ANCIEN SITE (recopié depuis le fichier joint)
+       ============================================================ */
     :root {
       --cream: #FFF8F0;
       --coral: #E05A5A;
@@ -807,7 +809,7 @@
     </div>
     <div class="progress-msg">
       <div class="msg-title" id="motivMsg">Belle entrée en matière</div>
-      <div class="msg-sub" id="motivSub">Tu as bien démarré, continue !</div>
+      <div class="msg-sub" id="motivSub">Piso, tu as bien démarré, continue !</div>
     </div>
   </div>
 
@@ -815,14 +817,14 @@
   <div class="rewards-section">
     <div class="rewards-title">
       <span>🏆 Récompenses (100 €)</span>
-      <span id="pointsDisplay">0 pts</span>
+      <span id="pointsDisplay">0 €</span>
     </div>
     <div id="rewardsList"></div>
   </div>
 
   <!-- CONGRATS BANNER -->
   <div class="congrats-banner" id="congratsBanner">
-    Bravo ! Tu as révisé tous les chapitres !
+    Bravo Piso ! Tu as révisé tous les chapitres !
   </div>
 
   <!-- ADD FORM -->
@@ -893,7 +895,10 @@
   const db = firebase.database();
   const dataRef = db.ref('/data');
 
-
+  // ================================================================
+  // 2. DONNÉES INITIALES (LES 156 CHAPITRES AVEC LEURS STATUTS)
+  //    Extraites du fichier joint "Ma Révision Médicale (1).html"
+  // ================================================================
   const DEFAULT_CHAPTERS = [
     // ---- Cardiologie (13, 0 révisés) ----
     { name: "HTA essentielle", theme: "Cardiologie", done: false },
@@ -1069,33 +1074,55 @@
   ];
 
   // ================================================================
-  // 3. SYSTÈME DE POINTS ET PALIERS
+  // 3. NOUVEAU SYSTÈME DE RÉCOMPENSES (PAR THÈME)
   // ================================================================
-  const THEME_WEIGHT = {
-    "Dermatologie": 1,
-    "MALADIE INFECTIEUSE": 1,
-    "Pneumologie": 1,
-    "Cardiologie": 2,
-    "Neurologie": 2,
-    "Traumatologie": 3,
-  };
-  function getWeight(theme) { return THEME_WEIGHT[theme] || 1; }
-
+  // Chaque palier est défini par une condition (thème ou combinaison de thèmes)
+  // et un montant.
   const REWARDS = [
-    { level: 1, percent: 0.20, amount: 3.125, label: "1er palier" },
-    { level: 2, percent: 0.40, amount: 6.25, label: "2ème palier" },
-    { level: 3, percent: 0.60, amount: 12.50, label: "3ème palier" },
-    { level: 4, percent: 0.80, amount: 25.00, label: "4ème palier" },
-    { level: 5, percent: 1.00, amount: 50.00, label: "5ème palier" },
+    {
+      level: 1,
+      condition: (chapters) => isThemeComplete(chapters, "Dermatologie"),
+      amount: 3.125,
+      label: "Dermatologie terminée"
+    },
+    {
+      level: 2,
+      condition: (chapters) => isThemeComplete(chapters, "MALADIE INFECTIEUSE"),
+      amount: 6.25,
+      label: "Infectiologie terminée"
+    },
+    {
+      level: 3,
+      condition: (chapters) => isThemeComplete(chapters, "Pneumologie"),
+      amount: 12.50,
+      label: "Pneumologie terminée"
+    },
+    {
+      level: 4,
+      condition: (chapters) => isThemeComplete(chapters, "Cardiologie") && isThemeComplete(chapters, "Neurologie"),
+      amount: 25.00,
+      label: "Cardio + Neuro terminées"
+    },
+    {
+      level: 5,
+      condition: (chapters) => isThemeComplete(chapters, "Traumatologie"),
+      amount: 50.00,
+      label: "Traumatologie terminée"
+    }
   ];
+
+  // Fonction utilitaire : vérifie si tous les chapitres d'un thème sont révisés
+  function isThemeComplete(chapters, theme) {
+    const themeChapters = chapters.filter(ch => ch.theme === theme);
+    if (themeChapters.length === 0) return false;
+    return themeChapters.every(ch => ch.done === true);
+  }
 
   // ================================================================
   // 4. ÉTAT LOCAL
   // ================================================================
   let chapters = [];
-  let unlockedLevels = [];
-  let totalPoints = 0;
-  let earnedPoints = 0;
+  let unlockedLevels = []; // stocke les niveaux déjà débloqués
 
   // ================================================================
   // 5. RÉFÉRENCES DOM
@@ -1122,11 +1149,8 @@
   const toast = $('toast');
 
   // ================================================================
-  // 6. FONCTIONS
+  // 6. FONCTIONS (stats, progression, liste)
   // ================================================================
-  function getWeightForChapter(ch) { return getWeight(ch.theme); }
-  function computeTotalPoints(arr) { return arr.reduce((s, ch) => s + getWeightForChapter(ch), 0); }
-  function computeEarnedPoints(arr) { return arr.reduce((s, ch) => s + (ch.done ? getWeightForChapter(ch) : 0), 0); }
   function getDoneCount(arr) { return arr.filter(ch => ch.done).length; }
 
   function renderStats() {
@@ -1139,44 +1163,53 @@
   }
 
   function renderProgress() {
-    const total = computeTotalPoints(chapters);
-    const earned = computeEarnedPoints(chapters);
-    totalPoints = total;
-    earnedPoints = earned;
-    const pct = total === 0 ? 0 : Math.min(100, Math.round((earned / total) * 100));
+    const total = chapters.length;
+    const done = getDoneCount(chapters);
+    const pct = total === 0 ? 0 : Math.min(100, Math.round((done / total) * 100));
     const circumference = 2 * Math.PI * 37; // ≈ 232.5
     const offset = circumference - (pct / 100) * circumference;
     ringFill.style.strokeDashoffset = offset;
     ringPct.textContent = pct + '%';
 
+    // Messages personnalisés pour Piso
     let msg, sub;
-    if (pct === 0) { msg = "Bienvenue !"; sub = "Commence tes révisions 💪"; }
-    else if (pct < 20) { msg = "Belle entrée en matière"; sub = "Continue, ça va venir !"; }
-    else if (pct < 40) { msg = "Bon rythme !"; sub = "Tu es sur la bonne voie 🚀"; }
-    else if (pct < 60) { msg = "Motivé(e) !"; sub = "La moitié est faite, tiens bon 💪"; }
-    else if (pct < 80) { msg = "Excellent !"; sub = "Plus que quelques chapitres !"; }
-    else if (pct < 100) { msg = "Presque fini !"; sub = "Dernière ligne droite 🏁"; }
-    else { msg = "🎉 Mission accomplie !"; sub = "Tu as révisé tous les chapitres !"; }
+    if (pct === 0) { msg = "Bienvenue Piso !"; sub = "Commence tes révisions 💪"; }
+    else if (pct < 20) { msg = "Belle entrée en matière Piso"; sub = "Continue, ça va venir !"; }
+    else if (pct < 40) { msg = "Bon rythme Piso !"; sub = "Tu es sur la bonne voie 🚀"; }
+    else if (pct < 60) { msg = "Motivée Piso !"; sub = "La moitié est faite, tiens bon 💪"; }
+    else if (pct < 80) { msg = "Excellent Piso !"; sub = "Plus que quelques chapitres !"; }
+    else if (pct < 100) { msg = "Presque fini Piso !"; sub = "Dernière ligne droite 🏁"; }
+    else { msg = "🎉 Mission accomplie Piso !"; sub = "Tu as révisé tous les chapitres !"; }
     motivMsg.textContent = msg;
     motivSub.textContent = sub;
 
     if (pct === 100 && chapters.length > 0) congratsBanner.classList.add('show');
     else congratsBanner.classList.remove('show');
-
-    pointsDisplay.textContent = `${earned} / ${total} pts`;
   }
 
   function renderRewards() {
-    const pct = totalPoints === 0 ? 0 : earnedPoints / totalPoints;
-    const newly = [];
+    // Vérifier quels paliers sont débloqués
+    const newlyUnlocked = [];
     REWARDS.forEach(r => {
-      if (pct >= r.percent && !unlockedLevels.includes(r.level)) {
+      const isUnlocked = r.condition(chapters);
+      if (isUnlocked && !unlockedLevels.includes(r.level)) {
         unlockedLevels.push(r.level);
-        newly.push(r);
+        newlyUnlocked.push(r);
       }
     });
-    unlockedLevels.sort((a, b) => a - b);
 
+    // Calcul du total des gains (cumul des montants des niveaux débloqués)
+    let totalEarned = 0;
+    REWARDS.forEach(r => {
+      if (unlockedLevels.includes(r.level)) {
+        totalEarned += r.amount;
+      }
+    });
+
+    // Affichage du total gagné
+    pointsDisplay.textContent = `${totalEarned.toFixed(2)} €`;
+
+    // Génération de la liste
     let html = '';
     REWARDS.forEach(r => {
       const unlocked = unlockedLevels.includes(r.level);
@@ -1188,7 +1221,7 @@
           <div class="reward-badge ${badgeClass}">${r.level}</div>
           <div class="reward-info">
             <div class="reward-amount">${r.amount.toFixed(2)} €</div>
-            <div class="reward-desc">${r.label} (${Math.round(r.percent * 100)}%)</div>
+            <div class="reward-desc">${r.label}</div>
           </div>
           <div class="reward-status ${statusClass}">${statusText}</div>
         </div>
@@ -1196,8 +1229,9 @@
     });
     rewardsList.innerHTML = html;
 
-    newly.forEach(r => {
-      showToast(`🎉 Félicitations ! Tu as débloqué ${r.amount.toFixed(2)} € (${r.label}) !`);
+    // Notifications pour les nouveaux paliers
+    newlyUnlocked.forEach(r => {
+      showToast(`🎉 Félicitations Piso ! Tu as débloqué ${r.amount.toFixed(2)} € (${r.label}) !`);
     });
   }
 
@@ -1225,7 +1259,7 @@
     for (const [theme, items] of Object.entries(groups)) {
       const doneCount = items.filter(i => i.done).length;
       const totalCount = items.length;
-      let dotColor = '#D4788A'; // couleur par défaut (navy)
+      let dotColor = '#D4788A';
       if (theme === 'Cardiologie') dotColor = '#E05A5A';
       else if (theme === 'Dermatologie') dotColor = '#C4607A';
       else if (theme === 'MALADIE INFECTIEUSE') dotColor = '#F0A0B0';
